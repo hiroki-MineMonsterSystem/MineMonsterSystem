@@ -53,7 +53,9 @@ use System\system\SystemText;
 use System\event\EnemyKill;
 use System\event\UseItem;
 use System\event\UseMap;
+
 use System\system\INN;
+use System\system\StorageBox;
 
 use System\system\OpList;
 
@@ -208,15 +210,39 @@ class EventListener implements Listener{
 
 	}
 
-	/*public function onInventoryOpen(InventoryOpenEvent $e){
+	public function onInventoryOpen(InventoryOpenEvent $e){
 		$player = $e->getPlayer();
 		$inv = $e->getInventory();
+		
+		if($e->isCancelled()){
+			return;
+		}
+		
+		$tile = $inv->getHolder();
+		
+		if($tile->getName() == "StorageBox"){
+		
+			//new StorageBox()->open($player, $tile);
+		
+		}
 	}
 
 	public function onInventoryClose(InventoryCloseEvent $e){
 		$player = $e->getPlayer();
  		$inv = $e->getInventory();
-	}*/
+ 		
+ 		if($e->isCancelled()){
+			return;
+		}
+		
+		$tile = $inv->getHolder();
+		
+		if($tile->getName() == "StorageBox"){
+		
+			//new StorageBox()->close($player, $tile);
+		
+		}
+	}
 
 	public function onEntityDeath(EntityDeathEvent $ev){
 

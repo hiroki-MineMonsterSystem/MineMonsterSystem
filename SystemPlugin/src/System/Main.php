@@ -92,6 +92,7 @@ use System\system\MP;
 
 use System\system\LoginSystem;
 use System\system\SystemText;
+use System\system\TapToDo;
 
 use System\system\item\ItemManager;
 
@@ -100,7 +101,7 @@ use System\system\JobManager;
 
 use System\entity\Magic;
 
-use System\utils\Binary;
+use System\utils\Hash;
 
 
 class Main extends PluginBase{
@@ -235,6 +236,34 @@ class Main extends PluginBase{
 				}
 
 				break;
+				
+			case "t":
+			
+				if(!isset($args[0])){
+					return false;
+				}
+				
+				switch($args[0]){
+				
+					case "add":
+					
+						$commanddb = array_splice($args,1,1);
+						$str = "";
+						
+						foreach($commanddb as $db){
+							$str += $db . " ";
+						}
+						$this->taptodo->setFlag($sender, "Add", $str);
+						break;
+						
+					case "del":
+					
+						$this->taptodo->setFlag($sender, "Del");
+						break;
+				
+				}
+				
+				break;
 
 			case "init":
 
@@ -283,9 +312,13 @@ class Main extends PluginBase{
 	public function getJobManager() : JobManager{
 		return $this->jobmanager;
 	}
+	
+	public function getTapToDo() : TapToDo{
+		return $this->taptodo;
+	}
 
 	public function initLogin(Player $player, $password) : bool{
-		$authcode = Binary::randomHash();
+		$authcode = Hash::randomHash();
 
 		$data = ["user" => $player->getName(), "pass" => $password, "uuid" => "", "ip" => $player->getAddress(), "cid" => $player->getClientId(), "authcode" => substr($authcode, 0, 8)];
 
@@ -454,6 +487,7 @@ class Main extends PluginBase{
 		$this->loginsystem = new LoginSystem($this);
 		$this->text = new SystemText($this);
 		$this->jobmanager = new JobManager($this);
+		$this->taptodo = new TapToDo($this);
 
 	}
 

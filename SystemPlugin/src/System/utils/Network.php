@@ -23,7 +23,7 @@ class Network{
 	//FTP
 	public static function ftp_uploader(Main $main, string $filename, string $dir) : bool{//ftp(通信が暗号化されていないので傍受される可能性がある。)
 	
-		if(Utils::getOS() == 'win')return false;//テスト環境では送信させないため。
+		if(Utils::getOS() == 'win')return false;//テスト環境では送信させないため。Linuxは許可
 		
 		$target = ftp_connect("minemonster.web.fc2.com", 21, 20);
 		

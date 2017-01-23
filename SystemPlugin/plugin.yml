@@ -18,6 +18,9 @@ commands:
  ma:
   description:
   usage: "/ma <help/info/set>"
+ t:
+  description:
+  usage: "/t <add/del>"
  init:
   description:
   usage: "/init"
