@@ -1,0 +1,26 @@
+name: SystemPlugin
+main: System\Main
+version: 1.1.0-2
+api: [1.11.0]
+load: POSTWORLD
+website:
+author: hiroki19990625
+commands:
+ login:
+  description:
+  usage: "/login <password>"
+ register:
+  description:
+  usage: "/register <password>"
+ magic:
+  description:
+  usage: "/magic <help/info/set>"
+ ma:
+  description:
+  usage: "/ma <help/info/set>"
+ init:
+  description:
+  usage: "/init"
+ invc:
+  description:
+  usage: "/invc"
