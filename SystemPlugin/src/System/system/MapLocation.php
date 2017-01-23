@@ -13,12 +13,14 @@
 */
 namespace System\system;
 
+use pocketmine\math\Vector3;
+
 use System\Main;
 
 
 class MapLocation{
 
-	public function mapData($x, $y, $z, $levelname){//Move to system/Location
+	public static function mapData(float $x, float $y, float $z, string $levelname){
 
 		$pos = new Vector3($x, $y, $z);
 
