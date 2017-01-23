@@ -25,7 +25,7 @@ class MapLocation{
 		$pos = new Vector3($x, $y, $z);
 
 		$datas = [
-					"world:272#55#271:241#70#241" => "ƒŠƒX’n"
+					"world:272#55#271:241#70#241" => "ãƒªã‚¹åœ°"
 		];
 
 		foreach($datas as $data => $value){
