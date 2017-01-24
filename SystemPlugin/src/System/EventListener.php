@@ -149,6 +149,15 @@ class EventListener implements Listener{
 
 			}
 		}
+		
+		$taptodo = $this->main->getTapToDo();
+		if($taptodo->getFlag($player) == "Del"){
+			$taptodo->delCommand($player, $block->x, $block->y, $block->z);
+		}elseif($taptodo->getFlag($player) == "Add"){
+			$taptodo->addCommand($player, $block->x, $block->y, $block->z, $taptodo->getCommand($player));
+		}else{
+			$taptodo->executionCommand($player, $block->x, $block->y, $block->z);
+		}
 
 		if($block->getID() == 26){
 			$inn = new INN($this->main);

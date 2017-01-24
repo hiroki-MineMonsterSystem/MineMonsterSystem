@@ -84,6 +84,11 @@ class SystemText{
 					"magic.get" => "§e[セット中の魔法]\n§b<魔法名: #name#>\n§b<消費MP: #mp#>\n§b<属性: #att#>\n§b<威力: #power#>",
 					"magic.notfound" => "§cこのIDの魔法はありません。",
 					"magic.nothave" => "§c#name#という魔法は習得していません。",
+					
+					"taptodo.tap" => "§a>>§bブロックをタップして下さい。",
+					"taptodo.add" => "§a>>§b/#command# を登録しました。",
+					"taptodo.del.ok" => "§a>>§bその場所のコマンドを削除しました。",
+					"taptodo.del.ng" => "§a>>§bその場所にはコマンドが登録されていません。",
 
 					"inn.yes" => "§aHPとMPが全回復しました。",
 					"inn.no" => "§c泊まるには#gold#ギル必要です。",

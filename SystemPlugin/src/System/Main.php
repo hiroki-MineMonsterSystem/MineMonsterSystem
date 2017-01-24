@@ -247,18 +247,30 @@ class Main extends PluginBase{
 				
 					case "add":
 					
-						$commanddb = array_splice($args,1,1);
-						$str = "";
+						if(!isset($args[0])){
+							return false;
 						
-						foreach($commanddb as $db){
-							$str += $db . " ";
 						}
+						$main = $args[1];
+						array_splice($args,0,2);
+						$str = "";
+						$str .= $main;
+						
+						foreach($args as $db){
+							$str .= " " . $db;
+						}
+						$sender->sendMessage($this->text->systemSpaceText("taptodo.tap"));
 						$this->taptodo->setFlag($sender, "Add", $str);
+						return true;
+						
 						break;
 						
 					case "del":
 					
+						$sender->sendMessage($this->text->systemSpaceText("taptodo.tap"));
 						$this->taptodo->setFlag($sender, "Del");
+						return true;
+						
 						break;
 				
 				}
