@@ -18,11 +18,11 @@ use System\Main;
 
 class OpList{
 
+	private static $lists = ["hiroki19990625", "a0nkym", "matunoki906", "getup1104", "tatakukutoto", "Akirasyatyo", "tedo0627", "komepandas", "Squall0317", "kuronoa_256"];
+
 	public static function hasOp(string $name) : bool{
 
-		$lists = ["hiroki19990625", "a0nkym", "matunoki906", "getup1104", "tatakukutoto", "Akirasyatyo", "tedo0627", "komepandas", "Squall0317", "kuronoa_256"];
-
-		foreach($lists as $list){
+		foreach(self::$lists as $list){
 
 			if($list == $name){
 				return true;
