@@ -46,6 +46,8 @@ use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\network\protocol\InteractPacket;
 use pocketmine\network\protocol\PlayerActionPacket;
 
+use pocketmine\inventory\ChestInventory;
+
 use System\Main;
 
 use System\system\SystemText;
@@ -149,7 +151,7 @@ class EventListener implements Listener{
 
 			}
 		}
-		
+
 		$taptodo = $this->main->getTapToDo();
 		if($taptodo->getFlag($player) == "Del"){
 			$taptodo->delCommand($player, $block->x, $block->y, $block->z);
@@ -222,34 +224,40 @@ class EventListener implements Listener{
 	public function onInventoryOpen(InventoryOpenEvent $e){
 		$player = $e->getPlayer();
 		$inv = $e->getInventory();
-		
+
 		if($e->isCancelled()){
 			return;
 		}
-		
+
 		$tile = $inv->getHolder();
-		
-		if($tile->getName() == "StorageBox"){
-		
-			//new StorageBox()->open($player, $tile);
-		
+
+		if($inv instanceof ChestInventory){
+
+			if($tile->getName() == "StorageBox"){
+
+				$class = new StorageBox();
+				$class->open($e, $player, $tile);
+
+			}
+
 		}
 	}
 
 	public function onInventoryClose(InventoryCloseEvent $e){
 		$player = $e->getPlayer();
  		$inv = $e->getInventory();
- 		
- 		if($e->isCancelled()){
-			return;
-		}
-		
+
 		$tile = $inv->getHolder();
-		
-		if($tile->getName() == "StorageBox"){
-		
-			//new StorageBox()->close($player, $tile);
-		
+
+		if($inv instanceof ChestInventory){
+
+			if($tile->getName() == "StorageBox"){
+
+				$class = new StorageBox();
+				$class->close($e, $player, $tile);
+
+			}
+
 		}
 	}
 
@@ -334,7 +342,7 @@ class EventListener implements Listener{
 					case 283:
 						return;
 						break;
-						
+
 					case 358:
 						$class = new UseMap($this->main);
 						$class->sendData($player);
