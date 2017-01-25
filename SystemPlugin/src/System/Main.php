@@ -92,7 +92,9 @@ use System\system\MP;
 
 use System\system\LoginSystem;
 use System\system\SystemText;
+
 use System\system\TapToDo;
+use System\system\StorageBox;
 
 use System\system\item\ItemManager;
 
@@ -236,45 +238,45 @@ class Main extends PluginBase{
 				}
 
 				break;
-				
+
 			case "t":
-			
+
 				if(!isset($args[0])){
 					return false;
 				}
-				
+
 				switch($args[0]){
-				
+
 					case "add":
-					
+
 						if(!isset($args[0])){
 							return false;
-						
+
 						}
 						$main = $args[1];
 						array_splice($args,0,2);
 						$str = "";
 						$str .= $main;
-						
+
 						foreach($args as $db){
 							$str .= " " . $db;
 						}
 						$sender->sendMessage($this->text->systemSpaceText("taptodo.tap"));
 						$this->taptodo->setFlag($sender, "Add", $str);
 						return true;
-						
+
 						break;
-						
+
 					case "del":
-					
+
 						$sender->sendMessage($this->text->systemSpaceText("taptodo.tap"));
 						$this->taptodo->setFlag($sender, "Del");
 						return true;
-						
+
 						break;
-				
+
 				}
-				
+
 				break;
 
 			case "init":
@@ -324,9 +326,13 @@ class Main extends PluginBase{
 	public function getJobManager() : JobManager{
 		return $this->jobmanager;
 	}
-	
+
 	public function getTapToDo() : TapToDo{
 		return $this->taptodo;
+	}
+	
+	public function getStorageBox() : StorageBox{
+		return $this->storagebox;
 	}
 
 	public function initLogin(Player $player, $password) : bool{
@@ -378,7 +384,7 @@ class Main extends PluginBase{
 
 	public function initSave(string $name) : bool{
 
-		$data = ["level" => 1, "exp" => 0, "sub1" => 10, "sub2" => 10, "gold" => 0, "maxmp" => 10, "mp" => 10, "magiclist" => [0,1], "magic" => 0, "job" => "wa", "jobdata" => [], "skill" => 5, "skilldata" => [], "ver" => 1, "op" => false];
+		$data = ["level" => 1, "exp" => 0, "sub1" => 10, "sub2" => 10, "gold" => 0, "maxmp" => 10, "mp" => 10, "magiclist" => [0,1], "magic" => 0, "job" => "tr", "jobdata" => [], "skill" => 5, "skilldata" => [], "ver" => 1, "op" => false];
 
 		$this->player->set($name, $data);
 
@@ -500,6 +506,7 @@ class Main extends PluginBase{
 		$this->text = new SystemText($this);
 		$this->jobmanager = new JobManager($this);
 		$this->taptodo = new TapToDo($this);
+		$this->storagebox = new StorageBox($this);
 
 	}
 
