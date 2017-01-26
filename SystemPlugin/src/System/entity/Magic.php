@@ -33,6 +33,8 @@ use pocketmine\entity\Entity;
 use pocketmine\level\Explosion;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 
+use System\engine\SoundEngine;
+
 class Magic extends Projectile{
 	const NETWORK_ID = 64;
 
@@ -100,6 +102,7 @@ class Magic extends Projectile{
 				switch ($this->attribute) {
 					case 5:
 						$this->level->spawnLightning($this);
+						SoundEngine::playSound($this, 70, 100);
 						break;
 				}
 			}

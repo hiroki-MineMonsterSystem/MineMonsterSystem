@@ -106,6 +106,8 @@ use System\entity\MagicObject;
 
 use System\utils\Hash;
 
+use System\engine\SoundEngine;
+
 
 class Main extends PluginBase{
 
@@ -294,6 +296,14 @@ class Main extends PluginBase{
 				$sender->getInventory()->clearAll();
 				return true;
 				break;
+
+			case "debug":
+
+			  foreach ($args as $v) {
+			  	SoundEngine::playSound($sender, $v);
+			  }
+				return true;
+				break;
 		}
 }
 
@@ -332,7 +342,7 @@ class Main extends PluginBase{
 	public function getTapToDo() : TapToDo{
 		return $this->taptodo;
 	}
-	
+
 	public function getStorageBox() : StorageBox{
 		return $this->storagebox;
 	}

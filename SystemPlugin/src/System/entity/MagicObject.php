@@ -102,11 +102,6 @@ class MagicObject extends Projectile{
 				continue;
 			}else{
 				switch ($this->attribute) {
-					case 22:
-						$this->level->spawnLightning($entity);
-
-						break;
-
 					case 30:
 						$effects = [
 							Effect::getEffect(19)->setDuration(600)->setAmplifier(0)
