@@ -102,6 +102,7 @@ use System\system\MagicManager;
 use System\system\JobManager;
 
 use System\entity\Magic;
+use System\entity\MagicObject;
 
 use System\utils\Hash;
 
@@ -143,6 +144,7 @@ class Main extends PluginBase{
 
 		//entityを登録
 		Entity::registerEntity(Magic::class);
+		Entity::registerEntity(MagicObject::class);
 
 	}
 

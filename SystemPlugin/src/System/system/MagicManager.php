@@ -37,9 +37,9 @@ class MagicManager{
 		$this->text = new SystemText();
 
 	}
-	
+
 	public function getData(int $id = 0) : array{
-	
+
 		$magic = [//name, attribute, damage, speed, mp, Item, typeID
 					0 => ["設定無し", 0, 0, 0, 0, Item::get(0)],
 					1 => ["ファイア", 1, 10, 1, 5, Item::get(51,0,1)],
@@ -55,9 +55,9 @@ class MagicManager{
 					11 => ["ウォタラ", 4, 23, 1, 10, Item::get(9,0,32)],
 					12 => ["ウォータガ", 4, 35, 1, 20, Item::get(9,0,64)],
 					13 => ["バイオ", 30, 6, 1, 4, Item::get(351,2,1)],
-					14 => ["バイオガ", 30, 22, 1, 30, Item::get(351,2,64)]
+					14 => ["バイオガ", 31, 22, 1, 30, Item::get(351,2,64)]
 				];
-				
+
 		if(!isset($magic[$id])){
 			$data = ["存在しません", 0, "-", "-", "-", Item::get(0)];
 		}else{
@@ -65,114 +65,111 @@ class MagicManager{
 		}
 
 		return $data;
-	
+
 	}
-	
+
 	public function listMagic($player, $page){
-	
+
 		$datas = $data = $this->main->getSave($player->getName())["magiclist"];
 		$items = [];
 		$c = 0;
 		$listp = ($page - 1) * 4;
-		
+
 		foreach($datas as $data){
 			$items[$c] = $data;
 			++$c;
 		}
-		
+
 		$player->sendMessage("§e=====魔法リスト(" . $c . ")=====");
-		
+
 		for($i = 0; $i < 4; ++$i){
 			$ind = ($listp + $i);
 			if(!isset($items[$ind]))return;
 			$db = $this->getData($items[$ind]);
 			$player->sendMessage($this->text->systemSpaceText("magic.list", ["id" => $items[$ind], "name" => $db[0]]));
 		}
-	
+
 	}
-	
+
 	private function getAttributeString(int $type = 0) : string{
-	
+
 		$attribute = [
 						0 => "-----",
 						1 => "火属性",
 						2 => "氷属性",
 						3 => "風属性",
 						4 => "水属性",
-						30 => "毒属性"
+						30 => "毒属性",
+						31 => "毒属性(強)"
 					];
-					
+
 		return $attribute[$type];
 	}
-	
+
 	public function magicInfo(string $name, int $id = 0) : string{
-	
+
 		$magic = $this->getData($id);
-		
+
 		$att = $this->getAttributeString($magic[1]);
-		
+
 		if($this->haveMagic($name, $id)){
 			$have = "持っている";
 		}else{
 			$have = "持っていない";
 		}
-		
+
 		return $this->text->systemSpaceText("magic.usage", ["name" => $magic[0], "mp" => $magic[4], "att" => $att, "power" => $magic[2], "have" => $have]);
-	
-	}
-
-	public function magicBehavior(){
 
 	}
-	
+
 	public function getInfoMagic(string $name) : string{
-	
+
 		$id = $this->getMagic($name);
 		$magic = $this->getData($id);
-		
+
 		$att = $this->getAttributeString($magic[1]);
-		
+
 		return $this->text->systemSpaceText("magic.get", ["name" => $magic[0], "mp" => $magic[4], "att" => $att, "power" => $magic[2]]);
-	
+
 	}
-	
+
 	public function haveMagic(string $name, int $id) : bool{
-	
+
 		$data = $this->main->getSave($name);
-		
+
 		foreach($data["magiclist"] as $magic){
-		
+
 			if($magic == $id){
 				return true;
 			}
-		
+
 		}
-		
+
 		return false;
-	
+
 	}
-	
+
 	public function shotMagic(Player $player, int $id){
-	
+
 		if($id <= 0)return;
-	
+
 		$magic = $this->getData($id);
-		
+
 		$mpclass = $this->main->getMPClass();
-		
+
 		$mp = $mpclass->getMP($player->getName());
-		
+
 		if($mp < $magic[4]){
 			$player->sendMessage($this->text->systemSpaceText("magic.nomp"));
 			return;
 		}
-		
+
 		$mpclass->useMP($player->getName(), $magic[4]);
-		
+
 		$player->sendTip($this->text->systemSpaceText("magic.use", ["name" => $magic[0]]));
-		
-		if(isset($magic[6])){
-			//Todo $this->magicBehavior();
+
+		if($magic[1] >= 20){
+			$this->magicBehavior($player, $magic[5], $magic[1]);
 			return;
 		}
 
@@ -198,9 +195,31 @@ class MagicManager{
 		$ammo->spawnToAll();
 
 	}
-	
+
+	public function magicBehavior(Player $player, Item $item,int $behav){
+		$nbt = new CompoundTag("", [
+			"Pos" => new ListTag("Pos", [
+				new DoubleTag("", $player->x),
+				new DoubleTag("", $player->y + $player->getEyeHeight()),
+				new DoubleTag("", $player->z)
+					] ),
+			"Motion" => new ListTag("Motion", [
+				new DoubleTag("", 0),
+				new DoubleTag("", 0),
+				new DoubleTag("", 0)
+					] ),
+			"Rotation" => new ListTag("Rotation", [
+				new FloatTag("", $player->yaw),
+				new FloatTag("", $player->pitch)
+					] )
+			] );
+
+		$ammo = Entity::createEntity("MagicObject", $player->chunk, $nbt, $player, true, $item, 5, $behav);
+		$ammo->spawnToAll();
+	}
+
 	public function getMagicList(string $name){
-		
+
 		$data = $this->main->getSave($name);
 
 		if(isset($data)){
@@ -208,11 +227,11 @@ class MagicManager{
 		}else{
 			return null;
 		}
-		
+
 	}
-	
+
 	public function setMagicList(string $name, array $list) : bool{
-	
+
 		$data = $this->main->getSave($name);
 
 		if(isset($data)){
@@ -222,13 +241,13 @@ class MagicManager{
 		}else{
 			return false;
 		}
-	
+
 	}
-	
+
 	public function addMagicList(string $name, int $id) : bool{
-	
+
 		$data = $this->main->getSave($name);
-		
+
 		if($this->haveMagic($name, $id)){
 			return false;
 		}
@@ -241,15 +260,15 @@ class MagicManager{
 		}else{
 			return false;
 		}
-	
+
 	}
-	
+
 	public function fixMagicList(string $name) : bool{
 		return false;
 	}
-	
+
 	public function getMagic(string $name){
-	
+
 		$data = $this->main->getSave($name);
 
 		if(isset($data)){
@@ -257,11 +276,11 @@ class MagicManager{
 		}else{
 			return null;
 		}
-	
+
 	}
-	
+
 	public function setMagic(string $name, int $id) : bool{
-	
+
 		$data = $this->main->getSave($name);
 
 		if(isset($data)){
@@ -271,7 +290,7 @@ class MagicManager{
 		}else{
 			return false;
 		}
-	
+
 	}
 
 }
