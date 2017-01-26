@@ -109,7 +109,7 @@ use System\utils\Hash;
 class Main extends PluginBase{
 
 	const GAME_VERSION = 1;//int
-	const GAME_MIN_VERSION = 1.0;//float
+	const GAME_MIN_VERSION = 2.0;//float
 	const GAME_BUILD = 2;//int
 
 	private $listener;

@@ -1,6 +1,6 @@
 name: SystemPlugin
 main: System\Main
-version: 1.1.0-2
+version: 1.2.0-2
 api: [1.11.0]
 load: POSTWORLD
 website:
