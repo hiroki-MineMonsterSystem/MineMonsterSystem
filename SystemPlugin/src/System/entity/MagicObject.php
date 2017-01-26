@@ -35,7 +35,6 @@ use pocketmine\level\Explosion;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 
 class MagicObject extends Projectile{
-	const NETWORK_ID = 64;
 
 	public $width = 0.5;
 	public $length = 0.5;
@@ -104,7 +103,7 @@ class MagicObject extends Projectile{
 			}else{
 				switch ($this->attribute) {
 					case 22:
-						$this->level->spawnLightning($this);
+						$this->level->spawnLightning($entity);
 
 						break;
 
