@@ -27,3 +27,6 @@ commands:
  invc:
   description:
   usage: "/invc"
+ debug:
+  description:
+  usage: "/debug"

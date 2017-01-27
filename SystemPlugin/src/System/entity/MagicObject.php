@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -30,11 +30,11 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\entity\Projectile;
 use pocketmine\entity\Item as EntityItem;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Effect;
 use pocketmine\level\Explosion;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 
-class Magic extends Projectile{
-	const NETWORK_ID = 64;
+class MagicObject extends Projectile{
 
 	public $width = 0.5;
 	public $length = 0.5;
@@ -47,14 +47,14 @@ class Magic extends Projectile{
 	protected $attribute = 0;
 
 	protected $isCritical;
-	
+
 	protected $time;
 
-	public function __construct(Chunk $chunk, CompoundTag $nbt, Entity $shootingEntity = null, $critical = true, $item, $damage = 2, $attribute = 0, $time = 200){
+	public function __construct(Chunk $chunk, CompoundTag $nbt, Entity $shootingEntity = null, $critical = true, $item, $damage = 2, $attribute = 0, $time = 400){
 		$this->isCritical = (bool) $critical;
 		$this->attribute = $attribute;
 		$this->time = $time;
-		
+
 		if($item instanceof Item){
 			$this->item = $item;
 		}else{
@@ -62,7 +62,7 @@ class Magic extends Projectile{
 		}
 
 		$this->damage = $damage;
-		
+
 		parent::__construct($chunk, $nbt, $shootingEntity);
 
 	}
@@ -77,12 +77,17 @@ class Magic extends Projectile{
 		$hasUpdate = parent::onUpdate($currentTick);
 
 		$this->checkNearEntities($currentTick);
+		$this->time--;
+
+		if($this->time <= 0){
+			$this->kill();
+		}
 
 		$this->timings->stopTiming();
 
 		return $hasUpdate;
 	}
-	
+
 	protected function checkNearEntities($tickDiff){
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
 			$entity->scheduleUpdate();
@@ -90,23 +95,48 @@ class Magic extends Projectile{
 			if(!$entity->isAlive()){
 				continue;
 			}
-			
+
 			if($entity instanceof Player){
 				continue;
+			}elseif($entity instanceof self){
+				continue;
 			}else{
-				//...Todo
+				switch ($this->attribute) {
+					case 30:
+						$effects = [
+							Effect::getEffect(19)->setDuration(600)->setAmplifier(0)
+						];
+
+						foreach($effects as $effect){
+							$entity->addEffect($effect);
+						}
+
+						break;
+
+					case 31:
+						$effects = [
+							Effect::getEffect(19)->setDuration(400)->setAmplifier(1)
+						];
+
+						foreach($effects as $effect){
+							$entity->addEffect($effect);
+						}
+
+						break;
+				}
+				$this->kill();
 			}
 		}
 	}
 
 
 	public function spawnTo(Player $player){
-	
+
 		if($this->item instanceof Item){
 		}else{
 			$this->item = Item::get(1, 0, 1);
 		}
-	
+
 		$pk = new AddItemEntityPacket();
 		$pk->eid = $this->getId();
 		$pk->x = $this->x;
