@@ -102,7 +102,7 @@ class Magic extends Projectile{
 				switch ($this->attribute) {
 					case 5:
 						$this->level->spawnLightning($this);
-						SoundEngine::playSound($this, 70, 100);
+						SoundEngine::playSound($this, 44, -1, 93);
 						break;
 				}
 			}

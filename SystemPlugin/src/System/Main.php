@@ -105,6 +105,7 @@ use System\entity\Magic;
 use System\entity\MagicObject;
 
 use System\utils\Hash;
+use System\utils\CVSLoader;
 
 use System\engine\SoundEngine;
 
@@ -300,7 +301,13 @@ class Main extends PluginBase{
 			case "debug":
 
 			  foreach ($args as $v) {
-			  	SoundEngine::playSound($sender, $v);
+					for($i=-1; $i<100; $i++){
+						for($j=-1; $j<100; $j++){
+							SoundEngine::playSound($sender, $v, $i, $j);
+							echo $i . "::" . $j . "\n";
+							usleep(500000);
+						}
+					}
 			  }
 				return true;
 				break;
@@ -498,6 +505,8 @@ class Main extends PluginBase{
 			$this->ftp = new Config($this->getDataFolder() . "ftp.yml", Config::YAML, []);
 		}
 
+		$this->saveDefaultConfig();
+		
         $this->player = new Config($this->getDataFolder() . "data.yml", Config::YAML, []);
 		$this->xp = new Config($this->getDataFolder() . "xp.json", Config::JSON, []);
 		$this->updata = new Config($this->getDataFolder() . "online.json", Config::JSON, []);
@@ -520,6 +529,13 @@ class Main extends PluginBase{
 		$this->taptodo = new TapToDo($this);
 		$this->storagebox = new StorageBox($this);
 
+	}
+	
+	public function getCVSData(string $name){
+	
+		$data = CVSLoader::load($this->getDataFolder(), $name);
+		return $data;
+	
 	}
 
 }
