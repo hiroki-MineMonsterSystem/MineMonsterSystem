@@ -45,7 +45,7 @@ class SoundEngine{
   const SOUND_HURT_IN_WATER = 17;
   const SOUND_MAD = 18;
   const SOUND_BOOST = 19;
-  const SOUND_BOW = 20;
+  const SOUND_BOW = 20;//-1,1
   const SOUND_SQUISH_BIG  = 21;
   const SOUND_SQUISH_SMALL = 22;
   const SOUND_FALL_BIG = 23;
@@ -63,14 +63,14 @@ class SoundEngine{
   const SOUND_SADDLE = 35;
   const SOUND_ARMOR = 36;
   const SOUND_ADD_CHEST = 37;
-  const SOUND_THROW = 38;
+  const SOUND_THROW = 38;//-1,319
   const SOUND_ATTACK = 39;
-  const SOUND_ATTACK_NODAMAGE = 40;
+  const SOUND_ATTACK_NODAMAGE = 40;//-1,319
   const SOUND_WARN = 41;
   const SOUND_SHEAR = 42;
   const SOUND_MILK = 43;
-  const SOUND_THUNDER = 44;
-  const SOUND_EXPLODE = 45;
+  const SOUND_THUNDER = 44;//-1,93
+  const SOUND_EXPLODE = 45;//-1,2
   const SOUND_FIRE = 46;
   const SOUND_IGNITE = 47;
   const SOUND_FUSE = 48;
@@ -85,37 +85,37 @@ class SoundEngine{
   const SOUND_BULLET_HIT = 57;
   const SOUND_EXTINGUISH_FIRE = 58;
   const SOUND_ITEM_FIZZ = 59;
-  const SOUND_CHEST_OPEN = 60;
-  const SOUND_CHEST_CLOSED = 61;
-  const SOUND_POWER_ON = 62;
-  const SOUND_POWER_OFF = 63;
-  const SOUND_ATTACH = 64;
-  const SOUND_DETACH = 65;
-  const SOUND_DENY = 66;
-  const SOUND_TRIPOD = 67;
-  const SOUND_POP = 68;
-  const SOUND_DROP_SLOT = 69;
+  const SOUND_CHEST_OPEN = 60;//-1,1
+  const SOUND_CHEST_CLOSED = 61;//-1,1
+  const SOUND_POWER_ON = 62;//-1,1
+  const SOUND_POWER_OFF = 63;//-1,1
+  const SOUND_ATTACH = 64;//-1,1
+  const SOUND_DETACH = 65;//-1,1
+  const SOUND_DENY = 66;//-1,1
+  const SOUND_TRIPOD = 67;//-1,1
+  const SOUND_POP = 68;//-1,1
+  const SOUND_DROP_SLOT = 69;//-1,1
   const SOUND_NOTE = 70;
-  const SOUND_THORNS = 71;
-  const SOUND_PISTON_IN = 72;
-  const SOUND_PISTON_OUT = 73;
-  const SOUND_PORTAL = 74;
-  const SOUND_WATER = 75;
-  const SOUND_LAVA_POP = 76;
-  const SOUND_LAVA = 77;
-  const SOUND_BURP = 78;
-  const SOUND_BUCKET_FILL_WATER = 79;
-  const SOUND_BUCKET_FILL_LAVA = 80;
-  const SOUND_BUCKET_EMPTY_WATER = 81;
-  const SOUND_BUCKET_EMPTY_LAVA = 82;
-  const SOUND_GUARDIAN_FLOP = 83;
-  const SOUND_ELDERGUARDIAN_CURSE = 84;
-  const SOUND_MOB_WARNING = 85;
-  const SOUND_MOB_WARNING_BABY = 86;
-  const SOUND_TELEPORT = 87;
-  const SOUND_SHULKER_OPEN = 88;
-  const SOUND_SHULKER_CLOSE = 89;
-  const SOUND_DEFAULT = 90;
+  const SOUND_THORNS = 71;//?
+  const SOUND_PISTON_IN = 72;//-1,1
+  const SOUND_PISTON_OUT = 73;//-1,1
+  const SOUND_PORTAL = 74;//-1,1
+  const SOUND_WATER = 75;//-1,1
+  const SOUND_LAVA_POP = 76;//-1,1
+  const SOUND_LAVA = 77;//-1,1
+  const SOUND_BURP = 78;//-1,1
+  const SOUND_BUCKET_FILL_WATER = 79;//-1,1
+  const SOUND_BUCKET_FILL_LAVA = 80;//-1,1
+  const SOUND_BUCKET_EMPTY_WATER = 81;//-1,1
+  const SOUND_BUCKET_EMPTY_LAVA = 82;//-1,1
+  const SOUND_GUARDIAN_FLOP = 83;//?
+  const SOUND_ELDERGUARDIAN_CURSE = 84;//-1,319
+  const SOUND_MOB_WARNING = 85;//?
+  const SOUND_MOB_WARNING_BABY = 86;//?
+  const SOUND_TELEPORT = 87;//?
+  const SOUND_SHULKER_OPEN = 88;//?
+  const SOUND_SHULKER_CLOSE = 89;//?
+  const SOUND_DEFAULT = 90;//?
   const SOUND_UNDEFINED = 91;*/
 
   public static function playSoundByPositions(array $pos, int $id, int $volume = 100, int $pitch = 0){
@@ -137,7 +137,7 @@ class SoundEngine{
 
   }
 
-  public static function playSound(Position $pos, int $id, int $volume = 100, int $pitch = 0){
+  public static function playSound(Position $pos, int $id, int $volume = -1, int $pitch = 0){
 
     $pk = new LevelSoundEventPacket();
 
@@ -145,10 +145,10 @@ class SoundEngine{
     $pk->x = (int)$pos->x;
     $pk->y = (int)$pos->y;
     $pk->z = (int)$pos->z;
-    $pk->volume = $volume;
-    $pk->pitch = $pitch * 1000;
-    $pk->unknownBool = true;
-    $pk->unknownBool2 = true;
+    $pk->volume = (int)$volume;
+    $pk->pitch = (int)$pitch;
+    $pk->unknownBool = false;
+    $pk->unknownBool2 = false;
 
     Server::broadcastPacket($pos->level->getPlayers(), $pk);
 

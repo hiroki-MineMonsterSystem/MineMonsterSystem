@@ -300,7 +300,13 @@ class Main extends PluginBase{
 			case "debug":
 
 			  foreach ($args as $v) {
-			  	SoundEngine::playSound($sender, $v);
+					for($i=-1; $i<100; $i++){
+						for($j=-1; $j<100; $j++){
+							SoundEngine::playSound($sender, $v, $i, $j);
+							echo $i . "::" . $j . "\n";
+							usleep(500000);
+						}
+					}
 			  }
 				return true;
 				break;
