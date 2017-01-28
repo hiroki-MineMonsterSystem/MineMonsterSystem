@@ -27,7 +27,7 @@ class TapToDo{
 		$level  = $player->getLevel()->getName();
 		$pos = $x." . ".$y." . ".$z." . ".$level;
 		$this->setFlag($player, "");
-		
+
 		if(isset($this->data->getAll()[$pos])){
 			$datas = $this->data->getAll()[$pos];
 			$datas[] = $command;
@@ -67,26 +67,28 @@ class TapToDo{
 				if (strstr($command, "%op")){
 					$player->setOp(true);
 					$this->main->getServer()->dispatchCommand($player, $command);
-					$player->setOp(false);
+					while(!$player->isOp()){
+						$player->setOp(false);
+					}
 				}else{
 					$this->main->getServer()->dispatchCommand($player, $command);
 				}
 			}
 		}
 	}
-	
+
 	public function setFlag(Player $player, string $func, string $command = null){
 		$this->flag[$player->getName()] = $func;
-		
+
 		switch($func){
-		
+
 			case "Add":
-			
+
 				$this->command[$player->getName()] = $command;
 				break;
 		}
 	}
-	
+
 	public function getFlag(Player $player){
 		if(isset($this->flag[$player->getName()])){
 			return $this->flag[$player->getName()];
@@ -94,7 +96,7 @@ class TapToDo{
 			return null;
 		}
 	}
-	
+
 	public function getCommand(Player $player){
 		if(isset($this->command[$player->getName()])){
 			return $this->command[$player->getName()];

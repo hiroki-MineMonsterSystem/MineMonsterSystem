@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -33,6 +33,8 @@ use pocketmine\entity\Entity;
 use pocketmine\level\Explosion;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 
+use System\engine\SoundEngine;
+
 class Magic extends Projectile{
 	const NETWORK_ID = 64;
 
@@ -47,13 +49,13 @@ class Magic extends Projectile{
 	protected $attribute = 0;
 
 	protected $isCritical;
-	
+
 	protected $target;
 
 	public function __construct(Chunk $chunk, CompoundTag $nbt, Entity $shootingEntity = null, $critical = true, $item, $damage = 2, $attribute = 0){
 		$this->isCritical = (bool) $critical;
 		$this->attribute = $attribute;
-		
+
 		if($item instanceof Item){
 			$this->item = $item;
 		}else{
@@ -61,7 +63,7 @@ class Magic extends Projectile{
 		}
 
 		$this->damage = $damage;
-		
+
 		parent::__construct($chunk, $nbt, $shootingEntity);
 
 	}
@@ -96,6 +98,14 @@ class Magic extends Projectile{
 			$this->motionX = ($this->target->x - $this->x) / $distance * 0.5;
 			$this->motionY = ($y - $this->y) / $distance * 0.5;
 			$this->motionZ = ($this->target->z - $this->z) / $distance * 0.5;
+			if($this->hadCollision){
+				switch ($this->attribute) {
+					case 5:
+						$this->level->spawnLightning($this);
+						SoundEngine::playSound($this, 70, 100);
+						break;
+				}
+			}
 		}
 
 		if($this->age > 1200 or $this->isCollided){
@@ -109,12 +119,12 @@ class Magic extends Projectile{
 	}
 
 	public function spawnTo(Player $player){
-	
+
 		if($this->item instanceof Item){
 		}else{
 			$this->item = Item::get(1, 0, 1);
 		}
-	
+
 		$pk = new AddItemEntityPacket();
 		$pk->eid = $this->getId();
 		$pk->x = $this->x;
