@@ -1,1 +1,3 @@
-�Ђ̂��̂ڂ�,D,1,1,-1
+﻿ID(int),ItemID(int),Meta(int),Name(string),Rank(string),Attack(int),Kaisinn(float),Behaver(int)
+1,268,0,ひのきのぼう,D,2,1,-1,90
+2,269,0,こんぼう,D,4,1.6,-1,10

@@ -174,7 +174,12 @@ class EventListener implements Listener{
 
 		$player = $e->getPlayer();
 		$item = $e->getItem();
+		$block = $e->getBlock();
 		$name = $player->getName();
+
+		if($block->getID() == 35){
+			$this->main->getItemBox()->openBox($player);
+		}
 
 		if(!$this->main->getLoginSystem()->hasLogin($player) || !OpList::hasOp($name)){
 			$e->setCancelled();

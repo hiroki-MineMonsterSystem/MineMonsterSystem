@@ -95,17 +95,19 @@ use System\system\SystemText;
 
 use System\system\TapToDo;
 use System\system\StorageBox;
+use System\system\ItemBox;
 
 use System\system\item\ItemManager;
 
 use System\system\MagicManager;
 use System\system\JobManager;
+use System\system\WeaponManager;
 
 use System\entity\Magic;
 use System\entity\MagicObject;
 
 use System\utils\Hash;
-use System\utils\CVSLoader;
+use System\utils\CSVLoader;
 
 use System\engine\SoundEngine;
 
@@ -346,12 +348,20 @@ class Main extends PluginBase{
 		return $this->jobmanager;
 	}
 
+	public function getWeaponManager() : WeaponManager{
+		return $this->wm;
+	}
+
 	public function getTapToDo() : TapToDo{
 		return $this->taptodo;
 	}
 
 	public function getStorageBox() : StorageBox{
 		return $this->storagebox;
+	}
+
+	public function getItemBox() : ItemBox{
+		return $this->itembox;
 	}
 
 	public function initLogin(Player $player, $password) : bool{
@@ -483,6 +493,10 @@ class Main extends PluginBase{
 
 	}
 
+	public function getWeapon() : array{
+		return $this->weapon;
+	}
+
 	public function tagUpdate(Player $player){
 
 	}
@@ -505,13 +519,15 @@ class Main extends PluginBase{
 			$this->ftp = new Config($this->getDataFolder() . "ftp.yml", Config::YAML, []);
 		}
 
-		$this->saveDefaultConfig();
-		
+		$this->saveResource("Weapon.csv", true);
+
         $this->player = new Config($this->getDataFolder() . "data.yml", Config::YAML, []);
 		$this->xp = new Config($this->getDataFolder() . "xp.json", Config::JSON, []);
 		$this->updata = new Config($this->getDataFolder() . "online.json", Config::JSON, []);
 		$this->login = new Config($this->getDataFolder() . "login.yml", Config::YAML, []);
 		$this->ftp = new Config($this->getDataFolder() . "ftp.yml", Config::YAML, []);
+
+		$this->weapon = $this->getCSVData("Weapon");
 
 	}
 
@@ -528,14 +544,16 @@ class Main extends PluginBase{
 		$this->jobmanager = new JobManager($this);
 		$this->taptodo = new TapToDo($this);
 		$this->storagebox = new StorageBox($this);
+		$this->itembox = new ItemBox($this);
+		$this->wm = new WeaponManager($this);
 
 	}
-	
-	public function getCVSData(string $name){
-	
-		$data = CVSLoader::load($this->getDataFolder(), $name);
+
+	public function getCSVData(string $name) : array{
+
+		$data = CSVLoader::load($name, $this->getDataFolder());//rtrim($this->getDataFolder(), "/") . DIRECTORY_SEPARATOR);
 		return $data;
-	
+
 	}
 
 }
