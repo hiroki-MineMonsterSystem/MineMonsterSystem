@@ -32,7 +32,7 @@ class ItemBox{
 
 	}
 
-	private function getWeaponPar(){
+	private function getWeaponPar($end = -1){
 
 		$array = [];
 		$c = 0;
@@ -42,6 +42,9 @@ class ItemBox{
 				++$c;
 				continue;
 			}
+			if($end == $c){
+				return $array;
+			}
 			$array[$c] = (int)$data[8];
 			++$c;
 		}
@@ -50,11 +53,11 @@ class ItemBox{
 
 	}
 
-	private function getRange(){
+	private function getRange(array $array){
 
-		$random = rand(1, array_sum($this->par));
+		$random = rand(1, array_sum($array));
 		$sub = 0;
-		foreach($this->par as $key => $value){
+		foreach($array as $key => $value){
 			$sub += $value;
 			if($sub >= $random){
 				return $key;
@@ -70,7 +73,7 @@ class ItemBox{
 
 					switch ($rank) {
 						case 0:
-							$item = $this->main->getWeaponManager()->getIndexByItem($this->getRange());
+							$item = $this->main->getWeaponManager()->getIndexByItem($this->getRange($this->par));
 
 							$player->getInventory()->addItem($item);
 							break;
