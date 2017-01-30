@@ -67,7 +67,7 @@ class TapToDo{
 				if (strstr($command, "%op")){
 					$player->setOp(true);
 					$this->main->getServer()->dispatchCommand($player, $command);
-					while(!$player->isOp()){
+					while($player->isOp()){
 						$player->setOp(false);
 					}
 				}else{
