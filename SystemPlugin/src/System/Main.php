@@ -250,6 +250,8 @@ class Main extends PluginBase{
 
 				if(!isset($args[0])){
 					return false;
+				}elseif(!$player->isOp()){
+					return $sender->sendMessage($this->text->systemSpaceText("parmission.admin"));
 				}
 
 				switch($args[0]){
@@ -285,13 +287,33 @@ class Main extends PluginBase{
 				}
 
 				break;
+				
+			case "sb":
+			
+				if(!isset($args[0])){
+					return false;
+				}
+				
+				switch($args[0]){
+				
+					case "setblock":
+					
+						if(!$sender->isOp()){
+							return $sender->sendMessage($this->text->systemSpaceText("parmission.admin"));
+						}
+						$this->getStorageBox()->setStorageBox($sender);
+						return true;
+						break;
+				
+				}
+				
+				break;
 
 			case "init":
 
 				$this->initSave($sender->getName());
 				$sender->getInventory()->clearAll();
 				return true;
-
 				break;
 
 			case "invc":
@@ -302,15 +324,6 @@ class Main extends PluginBase{
 
 			case "debug":
 
-			  foreach ($args as $v) {
-					for($i=-1; $i<100; $i++){
-						for($j=-1; $j<100; $j++){
-							SoundEngine::playSound($sender, $v, $i, $j);
-							echo $i . "::" . $j . "\n";
-							usleep(500000);
-						}
-					}
-			  }
 				return true;
 				break;
 		}

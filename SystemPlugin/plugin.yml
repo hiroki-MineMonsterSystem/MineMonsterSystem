@@ -21,6 +21,9 @@ commands:
  t:
   description:
   usage: "/t <add/del>"
+ sb:
+  description:
+  usage: "/sb <>"
  init:
   description:
   usage: "/init"

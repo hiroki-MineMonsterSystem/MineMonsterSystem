@@ -112,7 +112,11 @@ class SystemText{
 					"joblvup.value" => "§a#value1# LV ->  #value2# LV",
 
 					"get.item1" => "§a#name#は、#item#を手に入れた。",
-					"get.item2" => "§e#name#は、#item#を手に入れた。"
+					"get.item2" => "§e#name#は、#item#を手に入れた。",
+					
+					"parmission.security" => "§a警備員以上の権限が必要です。",
+					"parmission.op" => "§aOP以上の権限が必要です。",
+					"parmission.admin" => "§a管理者以上の権限が必要です。"
 		];
 
 		if(isset($datas[$textkey])){

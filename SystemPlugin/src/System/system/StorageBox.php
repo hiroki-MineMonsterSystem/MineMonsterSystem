@@ -46,14 +46,14 @@ class StorageBox{
 		$this->main = $main;
 		$this->data = new Config($this->main->getDataFolder() . "DB.yml", Config::YAML, []);
 		$this->userdb = new Config($this->main->getDataFolder() . "User.json", Config::JSON, []);
+		
+		$item = Item::get(54)->setCustomName("StorageBox");
+		
+		Item::addCreativeItem($item);
 
 		$this->chests = [];
 		$this->players = [];
 
-	}
-
-	public function setStorageBox(Player $player, Vector3 $pos){
-		//ToDo...
 	}
 
 	public function open(InventoryOpenEvent $event, Player $player, Tile $tile){
@@ -93,10 +93,10 @@ class StorageBox{
 		$inv = $event->getInventory();
 		$id = $this->chestId($inv);
 
-	  $this->saveInv($player, $inv);
+		$this->saveData($player, $inv);
 
-	  unset($this->chests[$id]);
-	  unset($this->players[$player->getName()]);
+		unset($this->chests[$id]);
+		unset($this->players[$player->getName()]);
 	}
 
 	protected function loadData(Player $player, ChestInventory $inv){
@@ -143,7 +143,7 @@ class StorageBox{
 	  }
 
 	  foreach($inv->getContents() as $slot => $item){
-			$data[$index][] = [HirokiFormat::h_Item_Eecode($item)];
+			$data[$index][] = [HirokiFormat::h_Item_Encode($item)];
 	  }
 
 	  $this->data->set($player->getName(), $data);

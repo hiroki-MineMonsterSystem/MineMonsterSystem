@@ -49,7 +49,7 @@ class TapToDo{
 			$player->sendMessage($this->text->systemSpaceText("taptodo.del.ok"));
 			return true;
 		}else{
-			$player->sendMessage($this->text->systemSpaceText("taptodo.del.ng"));//Todo
+			$player->sendMessage($this->text->systemSpaceText("taptodo.del.ng"));
 			return false;
 		}
 	}

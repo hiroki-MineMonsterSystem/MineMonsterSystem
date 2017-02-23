@@ -240,8 +240,7 @@ class EventListener implements Listener{
 
 			if($tile->getName() == "StorageBox"){
 
-				$class = new StorageBox();
-				$class->open($e, $player, $tile);
+				$this->main->getStorageBox()->open($e, $player, $tile);
 
 			}
 
@@ -258,8 +257,7 @@ class EventListener implements Listener{
 
 			if($tile->getName() == "StorageBox"){
 
-				$class = new StorageBox();
-				$class->close($e, $player, $tile);
+				$this->main->getStorageBox()->close($e, $player, $tile);
 
 			}
 
