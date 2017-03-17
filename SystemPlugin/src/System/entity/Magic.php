@@ -21,7 +21,7 @@
 
 namespace System\entity;
 
-use pocketmine\level\format\Chunk;
+use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\Player;
@@ -35,7 +35,7 @@ use pocketmine\event\entity\ExplosionPrimeEvent;
 
 use System\engine\SoundEngine;
 
-class Magic extends Projectile{
+class Magic extends Projectile{//魔法
 	const NETWORK_ID = 64;
 
 	public $width = 0.5;
@@ -52,7 +52,7 @@ class Magic extends Projectile{
 
 	protected $target;
 
-	public function __construct(Chunk $chunk, CompoundTag $nbt, Entity $shootingEntity = null, $critical = true, $item, $damage = 2, $attribute = 0){
+	public function __construct(Level $chunk, CompoundTag $nbt, Entity $shootingEntity = null, $critical = true, $item, $damage = 2, $attribute = 0){
 		$this->isCritical = (bool) $critical;
 		$this->attribute = $attribute;
 
@@ -77,7 +77,7 @@ class Magic extends Projectile{
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if(!$this->target instanceof Entity){
+		if(!$this->target instanceof Entity){//ターゲット条件
 			foreach($this->getLevel()->getEntities() as $player){
 				if($player->distance($this) <= 16){//10-20
 					if($player instanceof Player){
@@ -92,7 +92,7 @@ class Magic extends Projectile{
 				}
 			}
 		}
-		if($this->target instanceof Entity && $this->target->isAlive()){
+		if($this->target instanceof Entity && $this->target->isAlive()){//追尾
 			$y = ($this->target->y + 0.5);
 			$distance = sqrt(($this->target->x - $this->x)*($this->target->x - $this->x)+($y - $this->y)*($y - $this->y)+($this->target->z - $this->z)*($this->target->z - $this->z));
 			$this->motionX = ($this->target->x - $this->x) / $distance * 0.5;
@@ -101,8 +101,7 @@ class Magic extends Projectile{
 			if($this->hadCollision){
 				switch ($this->attribute) {
 					case 5:
-						$this->level->spawnLightning($this);
-						SoundEngine::playSound($this, 44, -1, 93);
+						SoundEngine::playSound($this, 44, 1, 1);
 						break;
 				}
 			}

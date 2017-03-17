@@ -25,7 +25,8 @@ class MapLocation{
 		$pos = new Vector3($x, $y, $z);
 
 		$datas = [
-					"world:272#55#271:241#70#241" => "リス地"
+					"world:272#55#271:241#70#241" => "リス地",
+					"world:232#54#239:283#70#190" => "城下町(ショップエリア)"
 		];
 
 		foreach($datas as $data => $value){

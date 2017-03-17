@@ -23,7 +23,7 @@ use pocketmine\network\protocol\LevelSoundEventPacket;
 
 use System\Main;
 
-class SoundEngine{
+class SoundEngine{//Todo... 1.0.4 現在、作動しません！
 
   /*const SOUND_ITEM_USE_ON = 0;
   const SOUND_HIT = 1;
@@ -118,6 +118,10 @@ class SoundEngine{
   const SOUND_DEFAULT = 90;//?
   const SOUND_UNDEFINED = 91;*/
 
+  /*
+    複数の場所にサウンドを送信
+  */
+
   public static function playSoundByPositions(array $pos, int $id, int $volume = 100, int $pitch = 0){
 
     foreach($pos as $p){
@@ -131,11 +135,15 @@ class SoundEngine{
         $pk->volume = $volume;
         $pk->pitch = $pitch * 1000;
 
-        Server::broadcastPacket($p->level->getPlayers(), $pk);
+        Server::getInstance()->broadcastPacket($p->level->getPlayers(), $pk);
       }
     }
 
   }
+
+  /*
+    特定の場所にサウンドを送信
+  */
 
   public static function playSound(Position $pos, int $id, int $volume = -1, int $pitch = 0){
 
@@ -150,7 +158,7 @@ class SoundEngine{
     $pk->unknownBool = false;
     $pk->unknownBool2 = false;
 
-    Server::broadcastPacket($pos->level->getPlayers(), $pk);
+    Server::getInstance()->broadcastPacket($pos->level->getPlayers(), $pk);
 
   }
 

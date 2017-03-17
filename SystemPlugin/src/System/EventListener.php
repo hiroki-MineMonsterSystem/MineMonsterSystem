@@ -17,6 +17,10 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\entity\Entity;
 
+use pocketmine\math\Vector3;
+
+use pocketmine\item\Item;
+
 use pocketmine\event\Listener;
 
 use pocketmine\event\player\PlayerJoinEvent;
@@ -45,10 +49,31 @@ use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\network\protocol\InteractPacket;
 use pocketmine\network\protocol\PlayerActionPacket;
+use pocketmine\network\protocol\PlayerInputPacket;
+use pocketmine\network\protocol\UpdateTradePacket;
+use pocketmine\network\protocol\UpdateAttributesPacket;
+use pocketmine\network\protocol\ContainerOpenPacket;
+
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\LongTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\StringTag;
+
+use System\mcpe\packet\MapInfoRequestPacket;
+
+use System\mcpe\Inventory\TestInventory;
 
 use pocketmine\inventory\ChestInventory;
 
 use System\Main;
+
+use System\entity\Rideable;
 
 use System\system\SystemText;
 
@@ -58,8 +83,12 @@ use System\event\UseMap;
 
 use System\system\INN;
 use System\system\StorageBox;
+use System\system\MapRenderer;
+use System\system\SpawnerSystem;
+use System\system\HealthBar;
+use System\system\TradeSystem;
 
-use System\system\OpList;
+use System\system\SystemParmission;
 
 
 class EventListener implements Listener{
@@ -82,17 +111,36 @@ class EventListener implements Listener{
 		$cancel = true;
 
 		if(!$this->main->getLoginSystem()->hasLogin($player)){
-			switch($ex[0]){
-				case "/login":
-				case "./login":
-				case "/register":
-				case "./register":
+			if($this->main->getLoginSystem()->loginCheck($player) == 3){
+				switch($ex[0]){
+					case "/authcode":
+					case "./authcode":
 
-					$cancel = false;
-					break;
+						$cancel = false;
+						break;
+				}
+				if($cancel){
+					$e->setCancelled();
+				}
+			}else{
+				switch($ex[0]){
+					case "/login":
+					case "./login":
+					case "/register":
+					case "./register":
+
+						$cancel = false;
+						break;
+				}
+				if($cancel){
+					$e->setCancelled();
+				}
 			}
-			if($cancel){
-				$e->setCancelled();
+		}
+
+		if(!SystemParmission::hasChangeParm($name)){
+			switch($ex[0]){
+				//Todo...
 			}
 		}
 
@@ -113,8 +161,24 @@ class EventListener implements Listener{
 
 		$player->sendMessage($this->text->systemSpaceText("login.1"));
 
+		$this->main->getStorageBox()->initData($player);
+
 		$this->main->checkSave($name);
 
+	}
+
+	public function onQuit(PlayerQuitEvent $event){
+
+		$player = $event->getPlayer();
+
+		foreach($this->main->getStorageBox()->players as $p => $i){
+			if($p == $player->getName()){
+				$this->main->getStorageBox()->invClose(new InventoryCloseEvent($i, $player));
+				$id = $this->main->getStorageBox()->chestId($i);
+				unset($this->main->getStorageBox()->chests[$id]);
+				unset($this->main->getStorageBox()->players[$player->getName()]);
+			}
+		}
 	}
 
 	public function onPlayerMove(PlayerMoveEvent $e){
@@ -127,6 +191,8 @@ class EventListener implements Listener{
 			$e->setCancelled();
 			return;
 		}
+
+		//MapRenderer::setDecoration($player, 1, [["rot" => 180, "img" => 0, "xOffset" => intval($player->x) - 256, "yOffset" => intval($player->z) - 256, "label" => "Player", "color" => 0xffffffff]]);
 
 	}
 
@@ -143,13 +209,17 @@ class EventListener implements Listener{
 			return;
 		}
 
-		if(!OpList::hasOp($name)){
+		if(!SystemParmission::hasChangeParm($name)){
 			if($h == 325 or $h == 259 or $h == 256 or $h == 269 or $h == 273 or $h == 277 or $h == 284 or $h == 290 or $h == 291 or $h == 292 or $h == 293 or $h == 294){
 
 				$player->sendMessage("このワールドでは、このアイテムのタップを実行できません");
 				$e->setCancelled();
-
+				return;
 			}
+		}
+
+		if($h == 347){
+			$player->sendMessage("Pos: [" . $block->x . "-" . $block->y . "-" . $block->z . "]\nBlockData: [" . $block->getID() . ":" . $block->getDamage() . "]");
 		}
 
 		$taptodo = $this->main->getTapToDo();
@@ -167,7 +237,12 @@ class EventListener implements Listener{
 			$e->setCancelled();
 			return;
 		}
+/*
+		$nbt = SpawnerSystem::createNBT($player, new Vector3(0,0,0));//Todo... ClientClash!
 
+		$entity = Entity::createEntity("Villager", $player->level, $nbt);
+		$entity->spawnToAll();
+*/
 	}
 
 	public function onBlockBreak(BlockBreakEvent $e){
@@ -181,8 +256,9 @@ class EventListener implements Listener{
 			$this->main->getItemBox()->openBox($player);
 		}
 
-		if(!$this->main->getLoginSystem()->hasLogin($player) || !OpList::hasOp($name)){
+		if(!$this->main->getLoginSystem()->hasLogin($player) || !SystemParmission::hasChangeParm($name)){
 			$e->setCancelled();
+			return;
 		}
 
 	}
@@ -193,8 +269,9 @@ class EventListener implements Listener{
 		$item = $e->getItem();
 		$name = $player->getName();
 
-		if(!$this->main->getLoginSystem()->hasLogin($player) || !OpList::hasOp($name)){
+		if(!$this->main->getLoginSystem()->hasLogin($player) || !SystemParmission::hasChangeParm($name)){
 			$e->setCancelled();
+			return;
 		}
 
 	}
@@ -310,6 +387,41 @@ class EventListener implements Listener{
 
 			}
 
+		}elseif($pk instanceof InteractPacket){
+
+			if($pk->action == InteractPacket::ACTION_RIGHT_CLICK){
+
+				$entity = $player->level->getEntity($pk->target);
+
+				if($entity instanceof Rideable){
+					if($entity->isLinked){
+					}else{
+						$entity->rideEntity($entity, $player);
+					}
+				}else{
+					//TradeSystem::startTrade($player, $entity, TradeSystem::getTradeData());
+				}
+			}elseif($pk->action == InteractPacket::ACTION_LEAVE_VEHICLE){
+
+				$entity = $player->level->getEntity($pk->target);
+
+				if($entity instanceof Rideable){
+					if($entity->isLinked){
+						$entity->unrideEntity($entity, $player);
+					}else{
+					}
+				}
+			}
+
+		}elseif($pk instanceof PlayerInputPacket){
+
+			if($player->isLinked){
+				$player->linkedentity->setMovement($pk->motionX, $pk->motionY);
+				if($pk->unknownBool1){
+					$player->linkedentity->setJump();
+				}
+			}
+
 		}elseif($pk instanceof UseItemPacket){
 
 			$magic = $this->main->getMagicManager()->getMagic($name);
@@ -363,6 +475,10 @@ class EventListener implements Listener{
 
 			}
 
+		}elseif($pk instanceof MapInfoRequestPacket){
+			MapRenderer::mapRender($player, 1, $this->main->getDataFolder(), "Map1");
+		}elseif($pk instanceof UpdateTradePacket){
+			print("Trade\n");
 		}
 	}
 }

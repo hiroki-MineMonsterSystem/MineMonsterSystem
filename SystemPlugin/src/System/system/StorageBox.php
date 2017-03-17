@@ -41,19 +41,30 @@ use System\utils\HirokiFormat;
 
 class StorageBox{
 
+	const MAX_PAGE = 10;
+
 	public function __construct(Main $main){
 
 		$this->main = $main;
 		$this->data = new Config($this->main->getDataFolder() . "DB.yml", Config::YAML, []);
 		$this->userdb = new Config($this->main->getDataFolder() . "User.json", Config::JSON, []);
-		
+
 		$item = Item::get(54)->setCustomName("StorageBox");
-		
+
 		Item::addCreativeItem($item);
 
 		$this->chests = [];
 		$this->players = [];
 
+	}
+
+	public function initData(Player $player){
+		//$db = $this->userdb->get($player);
+		$data = ["MaxIndex" => 5, "Index" => 1];
+		if(!$this->userdb->exists($player->getName())){
+			$this->userdb->set($player->getName(), $data);
+			$this->userdb->save();
+		}
 	}
 
 	public function open(InventoryOpenEvent $event, Player $player, Tile $tile){
@@ -62,12 +73,19 @@ class StorageBox{
 		$id = $this->chestId($inv);
 
 		if(isset($this->chests[$id])){
-  			$player->sendMessage(TextFormat::RED . "現在使用中です!");
-  			$event->setCancelled(true);
-  			return;
+  		$player->sendMessage(TextFormat::RED . "現在使用中です!(-2)");
+  		$event->setCancelled(true);
+  		return;
  		}
 
+		$index = $this->userdb->get($player->getName())["Index"];
  		$data = $this->data->get($player->getName());
+
+		if($index <= 0){
+			$player->sendMessage(TextFormat::RED . "ページが範囲外です(1-" . $this->userdb->get($player->getName())["MaxIndex"] . ")");
+			$event->setCancelled(true);
+			return;
+		}
 
 		if(!isset($data)){
 			$d = $this->data->get($player->getName());
@@ -143,7 +161,7 @@ class StorageBox{
 	  }
 
 	  foreach($inv->getContents() as $slot => $item){
-			$data[$index][] = [HirokiFormat::h_Item_Encode($item)];
+			$data[$index][] = HirokiFormat::h_Item_Encode($item);
 	  }
 
 	  $this->data->set($player->getName(), $data);

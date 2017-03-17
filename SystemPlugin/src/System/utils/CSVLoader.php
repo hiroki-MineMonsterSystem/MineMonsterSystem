@@ -45,7 +45,7 @@ class CSVLoader{
 		
 		}
 		
-		print_r($array);
+		//print_r($array);
 		
 		return $array;
 

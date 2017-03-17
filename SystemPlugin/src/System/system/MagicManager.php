@@ -192,7 +192,7 @@ class MagicManager{
 					] )
 			] );
 
-		$ammo = Entity::createEntity("Magic", $player->chunk, $nbt, $player, true, $magic[5], $magic[2], $magic[1]);
+		$ammo = Entity::createEntity("Magic", $player->level, $nbt, $player, true, $magic[5], $magic[2], $magic[1]);
 		$ammo->setMotion($ammo->getMotion()->multiply(1));
 		$ammo->spawnToAll();
 
@@ -216,7 +216,7 @@ class MagicManager{
 					] )
 			] );
 
-		$ammo = Entity::createEntity("MagicObject", $player->chunk, $nbt, $player, true, $item, 5, $behav);
+		$ammo = Entity::createEntity("MagicObject", $player->level, $nbt, $player, true, $item, 5, $behav);
 		$ammo->spawnToAll();
 	}
 

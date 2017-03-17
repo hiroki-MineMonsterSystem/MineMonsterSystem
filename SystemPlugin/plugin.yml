@@ -1,6 +1,6 @@
 name: SystemPlugin
 main: System\Main
-version: 1.2.0-2
+version: 1.3.1-3
 api: [1.11.0]
 load: POSTWORLD
 website:
@@ -12,6 +12,9 @@ commands:
  register:
   description:
   usage: "/register <password>"
+ authcode:
+  description:
+  usage: "/authcode <authcode>"
  magic:
   description:
   usage: "/magic <help/info/set>"
@@ -30,6 +33,3 @@ commands:
  invc:
   description:
   usage: "/invc"
- debug:
-  description:
-  usage: "/debug"

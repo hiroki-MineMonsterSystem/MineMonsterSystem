@@ -21,7 +21,7 @@
 
 namespace System\entity;
 
-use pocketmine\level\format\Chunk;
+use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\Player;
@@ -34,7 +34,7 @@ use pocketmine\entity\Effect;
 use pocketmine\level\Explosion;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 
-class MagicObject extends Projectile{
+class MagicObject extends Projectile{//触れると作動する魔法
 
 	public $width = 0.5;
 	public $length = 0.5;
@@ -50,7 +50,7 @@ class MagicObject extends Projectile{
 
 	protected $time;
 
-	public function __construct(Chunk $chunk, CompoundTag $nbt, Entity $shootingEntity = null, $critical = true, $item, $damage = 2, $attribute = 0, $time = 400){
+	public function __construct(Level $chunk, CompoundTag $nbt, Entity $shootingEntity = null, $critical = true, $item, $damage = 2, $attribute = 0, $time = 400){
 		$this->isCritical = (bool) $critical;
 		$this->attribute = $attribute;
 		$this->time = $time;

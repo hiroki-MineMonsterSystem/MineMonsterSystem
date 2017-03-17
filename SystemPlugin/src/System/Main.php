@@ -39,9 +39,7 @@ use pocketmine\utils\Utils;
 use pocketmine\tile\Chest as TileChest;
 use pocketmine\tile\Tile;
 
-use pocketmine\network\protocol\UseItemPacket;
-use pocketmine\network\protocol\InteractPacket;
-use pocketmine\network\protocol\PlayerActionPacket;
+use pocketmine\network\Network;
 
 use pocketmine\scheduler\CallbackTask;
 
@@ -97,6 +95,8 @@ use System\system\TapToDo;
 use System\system\StorageBox;
 use System\system\ItemBox;
 
+use System\system\SpawnerSystem;
+
 use System\system\item\ItemManager;
 
 use System\system\MagicManager;
@@ -105,18 +105,25 @@ use System\system\WeaponManager;
 
 use System\entity\Magic;
 use System\entity\MagicObject;
+use System\entity\Horse;
 
 use System\utils\Hash;
 use System\utils\CSVLoader;
 
 use System\engine\SoundEngine;
 
+use System\mcpe\packet\ClientboundMapItemDataPacket;
+use System\mcpe\packet\MapInfoRequestPacket;
+use System\mcpe\packet\BossEventPacket;
+
+use System\mcpe\Inventory\TestInventory;
+
 
 class Main extends PluginBase{
 
 	const GAME_VERSION = 1;//int
-	const GAME_MIN_VERSION = 2.0;//float
-	const GAME_BUILD = 2;//int
+	const GAME_MIN_VERSION = 3.1;//float
+	const GAME_BUILD = 3;//int
 
 	private $listener;
 
@@ -141,15 +148,18 @@ class Main extends PluginBase{
 		$this->getServer()->getScheduler()->scheduleDelayedRepeatingTask(new CallbackTask([$this,"sendChestItem"]), 120, 20*60*2);//2分に1回チェストアイテムを配布
 		$this->getServer()->getScheduler()->scheduleDelayedRepeatingTask(new CallbackTask([$this,"sendPop"]), 120, 20*60*3);//3分に1回お知らせ
 */
-		$this->dataFileRegister();
+		$this->dataFileRegister();//データファイル登録
 
-		$this->classInit();
+		$this->registerPackets();//パケット登録
+
+		$this->classInit();//クラス初期化
 
 		$this->item->registerItem();//itemclass登録
 
 		//entityを登録
 		Entity::registerEntity(Magic::class);
 		Entity::registerEntity(MagicObject::class);
+		Entity::registerEntity(Horse::class);
 
 	}
 
@@ -170,6 +180,14 @@ class Main extends PluginBase{
 					return false;
 				}
 				$this->loginsystem->register($sender, $args[0]);
+				return true;
+				break;
+
+			case "authcode":
+				if(!isset($args[0]) || $this->loginsystem->loginCheck($sender)){
+					return false;
+				}
+				$this->loginsystem->authCode($sender, $args[0]);
 				return true;
 				break;
 
@@ -250,7 +268,7 @@ class Main extends PluginBase{
 
 				if(!isset($args[0])){
 					return false;
-				}elseif(!$player->isOp()){
+				}elseif(!$sender->isOp()){
 					return $sender->sendMessage($this->text->systemSpaceText("parmission.admin"));
 				}
 
@@ -287,26 +305,10 @@ class Main extends PluginBase{
 				}
 
 				break;
-				
+
 			case "sb":
-			
-				if(!isset($args[0])){
-					return false;
-				}
-				
-				switch($args[0]){
-				
-					case "setblock":
-					
-						if(!$sender->isOp()){
-							return $sender->sendMessage($this->text->systemSpaceText("parmission.admin"));
-						}
-						$this->getStorageBox()->setStorageBox($sender);
-						return true;
-						break;
-				
-				}
-				
+				return true;
+
 				break;
 
 			case "init":
@@ -319,11 +321,6 @@ class Main extends PluginBase{
 			case "invc":
 
 				$sender->getInventory()->clearAll();
-				return true;
-				break;
-
-			case "debug":
-
 				return true;
 				break;
 		}
@@ -375,6 +372,10 @@ class Main extends PluginBase{
 
 	public function getItemBox() : ItemBox{
 		return $this->itembox;
+	}
+
+	public function getSpawnerSystem() : SpawnerSystem{
+		return $this->spawn;
 	}
 
 	public function initLogin(Player $player, $password) : bool{
@@ -559,6 +560,17 @@ class Main extends PluginBase{
 		$this->storagebox = new StorageBox($this);
 		$this->itembox = new ItemBox($this);
 		$this->wm = new WeaponManager($this);
+		$this->spawn = new SpawnerSystem($this);
+
+	}
+
+	public function registerPackets(){
+
+		$network = $this->getServer()->getNetwork();
+		//packetを登録
+		$network->registerPacket(0x42, ClientboundMapItemDataPacket::class);
+		$network->registerPacket(0x43, MapInfoRequestPacket::class);
+		$network->registerPacket(0x4b, BossEventPacket::class);
 
 	}
 

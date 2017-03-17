@@ -125,7 +125,7 @@ class LoginSystem{
 		return false;
 	}
 
-	private function loginCheck($player) : int{
+	public function loginCheck($player) : int{
 
 		$name = $player->getName();
 
